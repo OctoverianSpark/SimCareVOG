@@ -1,0 +1,44 @@
+button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  text-align: center;
+  font-size: 20px;
+  border-radius: 10px;
+}
+
+.green-btn {
+  background-color: #1a9e10;
+  width: 300px;
+  height: 50px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: white;
+
+  &:hover {
+    background-color: #157c0d;
+  }
+}
+
+.blue-btn {
+  border: 1px solid #19323b;
+  border-radius: 5px;
+  text-align: center;
+  padding: 5px;
+  color: #23424e;
+  font-weight: 700;
+
+  &.cancel {
+    width: 300px;
+  }
+
+  &:hover {
+    background-color: #1b353f;
+    color: white;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 15px;
+}

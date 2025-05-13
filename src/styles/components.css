@@ -1,0 +1,181 @@
+.household-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  width: 500px;
+  border-color: rgb(87, 85, 85);
+  box-shadow: 0.5px 0.5px 0.5px 1px #575757, 3px 3px 3px 2px #575757;
+  text-transform: capitalize;
+  border-radius: 5px;
+
+  span {
+    font-weight: 700;
+  }
+
+  .separator {
+    color: gray;
+    font-weight: 600;
+  }
+
+  a {
+    color: gray;
+    text-decoration: underline;
+  }
+}
+
+.household-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.blue-bordered-container {
+  position: relative;
+  width: 800px;
+  height: 200px;
+  background-color: rgb(225, 244, 255);
+  display: flex;
+
+  .text {
+    p {
+      font-size: 20px;
+    }
+    text-align: justify;
+    width: 700px;
+    margin: 0 auto;
+    padding: 40px;
+  }
+  &::before {
+    content: "";
+    width: 20px;
+    height: 100%;
+    display: block;
+    background-color: rgb(66, 66, 129);
+  }
+}
+.yellow-bordered-container {
+  position: relative;
+  width: 800px;
+  height: 400px;
+  background-color: rgb(250, 226, 120);
+  display: flex;
+
+  .text {
+    display: grid;
+    gap: 10px;
+    h2 {
+      font-size: 25px;
+      text-align: justify;
+    }
+    p {
+      font-size: 20px;
+      text-align: justify;
+    }
+
+    width: 700px;
+    margin: 0 auto;
+    padding: 40px;
+  }
+  &::before {
+    content: "";
+    width: 20px;
+    height: 100%;
+    display: block;
+    background-color: #fabf21;
+  }
+}
+
+.gray-container {
+  background-color: #b6bcbd;
+  min-height: 100px;
+  min-width: 450px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.blue-labeled-container {
+  display: flex;
+  gap: 10px;
+  height: 400px;
+  padding: 0 15px;
+
+  .form {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+  }
+  &::before {
+    content: "";
+    width: 10px;
+    height: 100%;
+    display: block;
+    background-color: rgb(98, 112, 238);
+  }
+}
+
+.container-income {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  border-bottom: 1px solid black;
+}
+
+.incomes {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  a {
+    color: gray;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.estimation-container {
+  border: 1px solid rgb(87, 87, 248);
+  border-radius: 15px;
+  padding: 20px;
+
+  .income-calc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+
+    .data {
+      background-color: rgb(185, 185, 252);
+      border-radius: 20px;
+      padding: 15px;
+      width: 150px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      p {
+        text-align: center;
+      }
+    }
+
+    .data-total {
+      border: 1px solid rgb(23, 23, 105);
+    }
+  }
+}
+
+.brief-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 600px;
+}
+
+.final-check {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

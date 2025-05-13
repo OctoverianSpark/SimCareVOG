@@ -1,0 +1,57 @@
+.section-title {
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-align: center;
+  width: 100%;
+}
+.conditions {
+  background-color: #063346;
+  display: grid;
+  place-items: center;
+  gap: 20px;
+
+  div {
+    margin-top: 20px;
+    background-color: white;
+    width: 70%;
+    border-radius: 0.5rem;
+    padding: 10px;
+    text-align: justify;
+
+    h1,
+    p {
+      text-align: justify;
+      margin: 10px;
+    }
+
+    h1 {
+      font-size: 25px;
+    }
+  }
+
+  .info-accepted {
+    width: 100%;
+    background-color: gray;
+    display: grid;
+    place-items: center;
+  }
+}
+
+form,
+.household,
+.dir-confirm {
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+}
+
+.preferred-lang {
+  width: 60%;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

@@ -1,0 +1,94 @@
+* {
+  scroll-behavior: smooth;
+}
+
+.app {
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  place-items: center;
+  overflow-x: hidden;
+}
+
+.subtitle-blue {
+  color: #087285;
+  font-size: 24px;
+  font-weight: 700;
+}
+.mainLogo {
+  font-weight: 600;
+  font-size: 60px;
+  span {
+    color: #087285;
+  }
+}
+
+.section-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 50px;
+  .section-header {
+    width: 100%;
+    height: 300px;
+    background-color: rgb(155, 155, 202);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .section-num {
+      font-size: 20px;
+      text-align: left;
+      width: 50%;
+    }
+    .section-title {
+      font-size: 50px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
+
+  .section-body {
+    width: 50%;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+
+    h3 {
+      font-size: 30px;
+    }
+
+    p {
+      font-size: 18px;
+    }
+
+    ul {
+      list-style: disc;
+      display: grid;
+      gap: 25px;
+      padding: 0px 50px;
+    }
+  }
+}
+
+.caption {
+  color: gray;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+.labeled-p {
+  background-color: rgb(187, 187, 255);
+  display: flex;
+  justify-content: space-between;
+  font-size: 23px;
+  font-weight: 700;
+  padding: 10px;
+}
