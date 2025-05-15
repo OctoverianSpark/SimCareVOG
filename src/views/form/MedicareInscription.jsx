@@ -4,12 +4,10 @@ import { getSessionToJSON, setSessionToJSON } from "../../utils/functions"
 
 
 const client = getSessionToJSON('client')
-const dependents = getSessionToJSON('dependents', [])
 
 export default function MedicareInscription() {
 
 
-  const [dependents, setDependents] = useState(JSON.parse(sessionStorage.getItem('dependents') ?? []))
 
   const goTo = e => {
 

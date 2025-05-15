@@ -9,7 +9,7 @@ const dependents = getSessionToJSON('dependents', [])
 
 export default function HomeTaxDeclarations() {
 
-  const [dependents, setDependents] = useState(JSON.parse(sessionStorage.getItem('dependents') ?? []))
+  
   const [showDependents, setShow] = useState(false)
   const [marriage, setMarriage] = useState({})
   const [dependentsForm, setDependentsForm] = useState(false)
