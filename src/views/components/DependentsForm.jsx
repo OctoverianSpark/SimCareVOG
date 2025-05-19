@@ -102,8 +102,8 @@ export default function DependentsForm({
             Fecha de nacimiento
             <p className="caption">Este campo es requerido</p>
             <div className="dob-inputs">
-              <input type="number" name="dob-day" placeholder="DD" min="1" max="31" required />
               <input type="number" name="dob-month" placeholder="MM" min="1" max="12" required />
+              <input type="number" name="dob-day" placeholder="DD" min="1" max="31" required />
               <input type="number" name="dob-year" placeholder="YYYY" min="1900" max={new Date().getFullYear()} required />
             </div>
           </label>

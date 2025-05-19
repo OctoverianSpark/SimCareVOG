@@ -86,7 +86,7 @@ export default function AboutMe() {
          <label className="label-input" htmlFor="client-middle-name">
             <span>Segundo nombre</span>
             <p className="caption">Opcional</p>
-            <input type="text" id="client-middle-name" name="middle-name" required defaultValue={client['middle-name'] || ""} />
+            <input type="text" id="client-middle-name" name="middle-name" defaultValue={client['middle-name'] || ""} />
          </label>
          <label className="label-input" htmlFor="client-last-name">
             <span>Apellido</span>
@@ -105,16 +105,6 @@ export default function AboutMe() {
                <div className="dob-inputs">
                   <input
                      type="number"
-                     id="dob-day"
-                     name="dob-day"
-                     placeholder="DD"
-                     min="1"
-                     max="31"
-                     required
-                     defaultValue={client['dob-day'] || null}
-                  />
-                  <input
-                     type="number"
                      id="dob-month"
                      name="dob-month"
                      placeholder="MM"
@@ -122,6 +112,16 @@ export default function AboutMe() {
                      max="12"
                      required
                      defaultValue={client['dob-month'] || null}
+                  />
+                  <input
+                     type="number"
+                     id="dob-day"
+                     name="dob-day"
+                     placeholder="DD"
+                     min="1"
+                     max="31"
+                     required
+                     defaultValue={client['dob-day'] || null}
                   />
                   <input
                      type="number"

@@ -68,20 +68,20 @@ export default function MedicaidCHIPEnd() {
                 <div className="dob-inputs">
                   <input
                     type="number"
-                    id="medicaid-chip-end-day"
-                    name="medicaid-chip-end-day"
-                    placeholder="DD"
-                    min="1"
-                    max="31"
-                    required
-                  />
-                  <input
-                    type="number"
                     id="medicaid-chip-end-month"
                     name="medicaid-chip-end-month"
                     placeholder="MM"
                     min="1"
                     max="12"
+                    required
+                  />
+                  <input
+                    type="number"
+                    id="medicaid-chip-end-day"
+                    name="medicaid-chip-end-day"
+                    placeholder="DD"
+                    min="1"
+                    max="31"
                     required
                   />
                   <input

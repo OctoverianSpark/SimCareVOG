@@ -98,20 +98,20 @@ export default function AddHouseHold() {
           <div className="dob-inputs">
             <input
               type="number"
-              id="dob-day"
-              name="dob-day"
-              placeholder="DD"
-              min="1"
-              max="31"
-              required
-            />
-            <input
-              type="number"
               id="dob-month"
               name="dob-month"
               placeholder="MM"
               min="1"
               max="12"
+              required
+            />
+            <input
+              type="number"
+              id="dob-day"
+              name="dob-day"
+              placeholder="DD"
+              min="1"
+              max="31"
               required
             />
             <input

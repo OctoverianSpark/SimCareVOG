@@ -96,22 +96,22 @@ export default function EditHouseHold() {
           <div className="dob-inputs">
             <input
               type="number"
-              id="dob-day"
-              name="dob-day"
-              placeholder="DD"
-              min="1"
-              max="31"
-              defaultValue={dependentRes["dob-day"]}
-              required
-            />
-            <input
-              type="number"
               id="dob-month"
               name="dob-month"
               placeholder="MM"
               min="1"
               max="12"
               defaultValue={dependentRes["dob-month"]}
+              required
+            />
+            <input
+              type="number"
+              id="dob-day"
+              name="dob-day"
+              placeholder="DD"
+              min="1"
+              max="31"
+              defaultValue={dependentRes["dob-day"]}
               required
             />
             <input

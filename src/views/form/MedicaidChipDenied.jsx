@@ -68,20 +68,20 @@ export default function MedicaidChipDenied() {
                 <div className="dob-inputs">
                   <input
                     type="number"
-                    id="medicaid-chip-denied-day"
-                    name="medicaid-chip-denied-day"
-                    placeholder="DD"
-                    min="1"
-                    max="31"
-                    required
-                  />
-                  <input
-                    type="number"
                     id="medicaid-chip-denied-month"
                     name="medicaid-chip-denied-month"
                     placeholder="MM"
                     min="1"
                     max="12"
+                    required
+                  />
+                  <input
+                    type="number"
+                    id="medicaid-chip-denied-day"
+                    name="medicaid-chip-denied-day"
+                    placeholder="DD"
+                    min="1"
+                    max="31"
                     required
                   />
                   <input

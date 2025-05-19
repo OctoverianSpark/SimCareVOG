@@ -55,20 +55,20 @@ export default function RecentChanges() {
                 <div className="dob-inputs">
                   <input
                     type="number"
-                    id="dob-day"
-                    name="change-day"
-                    placeholder="DD"
-                    min="1"
-                    max="31"
-                    required
-                  />
-                  <input
-                    type="number"
                     id="change-month"
                     name="change-month"
                     placeholder="MM"
                     min="1"
                     max="12"
+                    required
+                  />
+                  <input
+                    type="number"
+                    id="dob-day"
+                    name="change-day"
+                    placeholder="DD"
+                    min="1"
+                    max="31"
                     required
                   />
                   <input
