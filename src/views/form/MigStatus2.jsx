@@ -106,19 +106,19 @@ export default function MigStatus2() {
           <div className="dob-inputs">
             <input
               type="number"
-              id="exp-day"
-              name="exp-day"
-              placeholder="DD"
-              min="1"
-              max="31"
-            />
-            <input
-              type="number"
               id="exp-month"
               name="exp-month"
               placeholder="MM"
               min="1"
               max="12"
+            />
+            <input
+              type="number"
+              id="exp-day"
+              name="exp-day"
+              placeholder="DD"
+              min="1"
+              max="31"
             />
             <input
               type="number"

@@ -47,7 +47,13 @@ export default function Sign() {
           clearInterval(check);
           submitForm(e.target);
         }
+        alert('Espera un momento, estas siendo redirigido...')
       }, 500);
+
+
+      setTimeout(() => {
+        location.href = '/congratulations'
+      }, 1200);
     }
   };
 
