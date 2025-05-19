@@ -51,14 +51,31 @@ import FinalTerms from './views/form/FinalTerms.jsx'
 import Sign from './views/form/Sign.jsx'
 import Index from './views/page/Index.jsx'
 import Record from './views/page/Record.jsx'
+import LogIn from './views/admin/LogIn.jsx'
+import axios from 'axios'
+import Simulations from './views/admin/Simulations.jsx'
+import Admin from './views/admin/Admin.jsx'
+import Congratulations from './views/form/Congratulations.jsx'
+
+
+const token = localStorage.getItem('token')
+
+if (location.pathname.includes('/admin') && location.pathname != '/admin/login' && !token) {
+
+  location.href = '/'
+
+}
+
+
 
 
 export default function App() {
 
 
+
   return (
     <div className='app'>
-      <div>
+      <div className='header'>
         <h1 className='mainLogo'>
           Sim<span>Care</span>.vog
         </h1>
@@ -117,7 +134,10 @@ export default function App() {
           <Route path='/final-check' element={<FinalCheck />} />
           <Route path='/final-terms' element={<FinalTerms />} />
           <Route path='/sign' element={<Sign />} />
-
+          <Route path='/admin/login' element={<LogIn />} />
+          <Route path='/admin' element={<Admin />} />
+          <Route path='/admin/simulations' element={<Simulations />} />
+          <Route path='/congratulations' element={<Congratulations />} />
         </Routes>
       </BrowserRouter>
     </div>

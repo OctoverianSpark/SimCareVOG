@@ -1,91 +1,55 @@
-import React from 'react'
-import { startScreenRecording, getScreenStream, stopScreenRecording } from '../../utils/screenRecorder'
-import { useState } from 'react';
-import { useRef } from 'react';
-import { useEffect } from 'react';
-
-
-
-
-
+import React, { useRef, useEffect } from 'react';
+import { getScreenChannel } from '../../utils/lib/screenChannel';
+const bc = getScreenChannel();
 
 export default function Record() {
-
-
-
   const mediaRecorderRef = useRef(null);
-  const [recording, setRecording] = useState(false);
-  const hasStartedRef = useRef(false)
-  const [stream, setStream] = useState(null);
-  const [videoURL, setVideoURL] = useState(null)
 
+  const hasStarted = useRef(false);
   useEffect(() => {
-    const startRecording = async () => {
-      if (hasStartedRef.current === true) return
-
-      hasStartedRef.current = true
-
-      try {
-        const mediaStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-        setStream(mediaStream);
-
-        const recorder = new MediaRecorder(mediaStream);
-        const chunks = [];
-
-        recorder.ondataavailable = (e) => chunks.push(e.data);
-        recorder.onstop = () => {
-          const blob = new Blob(chunks, { type: 'video/webm' });
-          const url = URL.createObjectURL(blob);
-          setVideoURL(url)
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'Simulacion' + '.webm';
-          a.click();
-
-          setTimeout(() => URL.revokeObjectURL(url), 100);
-        };
-
-        mediaRecorderRef.current = recorder;
-        recorder.start();
-        setRecording(true);
-      } catch (err) {
-        console.error('Error al iniciar la grabación:', err);
-      }
-    };
-    startRecording();
 
 
+    if (hasStarted.current) return; // 👈 previene múltiples ejecuciones
+    hasStarted.current = true
+    let chunks = [];
 
+    async function start() {
+      console.log('StartRecording')
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        bc.postMessage({ type: 'recording-finished', blob });
+        chunks = [];
+        setTimeout(() => {
+
+          hasStarted.current = false
+          window.close()
+        }, 3000);
+      };
+
+      // arrancamos
+      recorder.start();
+
+      // escuchamos la orden de paro
+      bc.onmessage = evt => {
+        if (evt.data === 'stop-recording') {
+          recorder.stop();
+        }
+      };
+    }
+
+    start();
+
+    // NO cerramos el canal aquí
     return () => {
-      stream?.getTracks().forEach((t) => t.stop());
+      // solo detenemos la cámara al desmontar
+      mediaRecorderRef.current?.stream.getTracks().forEach(t => t.stop());
     };
   }, []);
 
-  const stop = () => {
-
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setRecording(false);
-      window.close()
-    }
-  };
-
-
-  return (
-    <div>
-
-
-      <div>
-        {
-          hasStartedRef.current && (
-            <h2 className='subtitle'>Grabando...</h2>
-          )
-        }
-
-        <button type="button" className='blue-btn' onClick={() => stop()}>Detener Grabacion</button>
-      </div>
-
-
-    </div>
-  )
+  return <h2 className='section-title subtitle-blue'>Grabando...</h2>;
 }

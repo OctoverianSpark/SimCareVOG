@@ -55,3 +55,8 @@ form,
   flex-direction: column;
   gap: 10px;
 }
+
+.container-form-section {
+  display: grid;
+  place-items: center;
+}
