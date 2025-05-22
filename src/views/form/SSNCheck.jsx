@@ -1,88 +1,59 @@
 import React, { useEffect, useState } from 'react'
 import { getSessionToJSON, setSessionToJSON } from "../../utils/functions"
 import { useSearchParams } from 'react-router-dom'
+
 const client = getSessionToJSON('client')
 const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(cover => cover['cover'] == true || cover['cover'] == 'true')
+console.log(all);
+
 
 export default function SSNCheck() {
 
 	const [qParams, setQParams] = useSearchParams()
-	const [covereds, setCovereds] = useState(dependents.filter(x => x['cover']))
-	const [current, setCurrent] = useState({})
 	const [confirm, setConfirm] = useState(false)
 	const [jump, setJump] = useState(false)
 	const [ssn, setSSN] = useState('')
 	const [hasSSN, setHasSSN] = useState(true)
 
-	const k = parseInt(qParams.get('k') ?? -1)
-
-	useEffect(() => {
-		setCurrent(k < 0 ? client : dependents[k])
-		console.log(current)
-	}, [k])
-
+	const k = parseInt(qParams.get('k')) || 0
 
 
 	const goTo = (e) => {
 
+
 		e.preventDefault()
 
-		const limit = dependents.length - 1
 		const data = new FormData(e.target)
 
-		if (k === -1) {
 
-			data.entries().forEach(([key, value]) => {
+		all[k]['ssn'] = data.get('ssn') || ''
+		all[k]['ssn-name-confirm'] = data.get('ssn-name-confirm') || ''
+		all[k]['ssn-first-name'] = data.get('ssn-first-name') || all[k]['first-name']
+		all[k]['ssn-middle-name'] = data.get('ssn-middle-name') || all[k]['middle-name']
+		all[k]['ssn-last-name'] = data.get('ssn-last-name') || all[k]['last-name']
+		all[k]['ssn-suffix'] = data.get('ssn-suffix') || all[k]['suffix']
 
-				client[key] = value
-
-			})
-
-			sessionStorage.setItem('client', JSON.stringify(client))
-
-		} else {
-
-			if (ssn === '' && jump === false) {
-
-				setJump(true)
-				return
+		all.forEach((cover, i) => {
+			if (cover === client) {
+				setSessionToJSON('client', cover)
 			} else {
-
-				data.entries().forEach(([key, value]) => {
-
-					dependents[k][key] = value
-
-				})
-
-				sessionStorage.setItem('dependents', JSON.stringify(dependents))
-
+				dependents[k - 1] = cover
+				setSessionToJSON('dependents', dependents)
 			}
+		})
 
-
+		if ((k + 1) === all.length) {
+			if (all.filter(cover => cover['ssn'] != '').length === 0) {
+				alert('El SSN debe ser ingresado por al menos un miembro')
+				location.href = '/ssn-check'
+			} else {
+				location.href = '/citizenship'
+			}
 		}
-
-
-		if (k >= limit || dependents.length == 0) {
-
-
-			location.href = '/citizenship'
-
-		} else {
-			setJump(false)
-			setSSN('')
-			setHasSSN(true)
-
-			setQParams({ k: k + 1 })
-
-
+		else {
+			location.href = `/ssn-check?k=${k + 1}`
 		}
-
-		if (confirm === true) {
-			setConfirm(false)
-
-		}
-
-
 
 	}
 
@@ -92,18 +63,18 @@ export default function SSNCheck() {
 		<form method='POST' className='ssn-check' onSubmit={goTo}>
 
 
-			<h2 className="section-title">Informacion de {current['first-name']}</h2>
+			<h2 className="section-title">Informacion de {all[k]['first-name']}</h2>
 
 			<div className="form-section">
 
 				<label htmlFor="ssn" className="label-input">
 
-					<p><b>Cu&aacute;l es el Numero de Seguro Social (SSN) de {current['first-name']}</b></p>
+					<p><b>Cu&aacute;l es el Numero de Seguro Social (SSN) de {all[k]['first-name']}</b></p>
 					<p className="caption">
-						Ingrese el numero de serie de 9 digitos de {current['first-name']}. Verificamos el SSN con el <br /> Seguro Social de acuerdo con el consentimiento que usted dio al inicio de la solicitud.
+						Ingrese el numero de serie de 9 digitos de {all[k]['first-name']}. Verificamos el SSN con el <br /> Seguro Social de acuerdo con el consentimiento que usted dio al inicio de la solicitud.
 					</p>
 
-					<input type="text" name="ssn" id="ssn" required={Boolean(current['cover'])} onChange={e => setSSN(e.target.value)} value={ssn} disabled={!hasSSN} />
+					<input type="text" name="ssn" id="ssn" required={all[k]['cover'] == 'true'} onChange={e => setSSN(e.target.value)} value={ssn} disabled={!hasSSN} />
 
 					<label htmlFor="no-ssn" className="checkbox-label h-15">
 						<input type="checkbox" name="has-ssn" id="no-ssn" value={hasSSN} onChange={() => setHasSSN(!hasSSN)} checked={!hasSSN} />
@@ -114,13 +85,13 @@ export default function SSNCheck() {
 			</div>
 
 			{
-				current === client && hasSSN === true && (
+				hasSSN === true && (
 
 					<div className="form-section">
-						<p><b>El nombre a continuaci&oacute;n coincide con el nombre en la tarjeta de Seguro Social de {current['first-name']}</b></p>
+						<p><b>El nombre a continuaci&oacute;n coincide con el nombre en la tarjeta de Seguro Social de {all[k]['first-name']}</b></p>
 
 						<div className="w-60 h-10 flex-1/2 p-2 bg-gray-400">
-							<p>{current['first-name']} {current['last-name']}</p>
+							<p>{all[k]['first-name']} {all[k]['last-name']}</p>
 						</div>
 
 						<label htmlFor="ssn-name-yes" className="radio-label">
@@ -171,7 +142,7 @@ export default function SSNCheck() {
 						<div className="text">
 
 							<h2 className='section-title'>Desea continuar sin ingresar un SSN?</h2>
-							<p>Ingrese el SSN de {current['first-name']}, para que podamos verificar si los miembros del
+							<p>Ingrese el SSN de {all[k]['first-name']}, para que podamos verificar si los miembros del
 								hogar son elegibles para los ahorros. Proporcionar el SSN ayuda a asegurarse
 								que la elegibilidad sea correcta, ayuda a que el proceso de solicitud sea más
 								fluido y rapido, y hace que sea menos probable que deba enviar mas

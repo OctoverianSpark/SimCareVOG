@@ -6,7 +6,6 @@ import { useSearchParams } from 'react-router-dom';
 const client = getSessionToJSON('client')
 const dependents = getSessionToJSON('dependents', [])
 
-console.log(client)
 
 
 export default function AboutMe() {
@@ -22,7 +21,7 @@ export default function AboutMe() {
 
       const formData = new FormData(form);
 
-      
+
 
       formData.entries().forEach(([key, value]) => {
 
@@ -35,7 +34,7 @@ export default function AboutMe() {
       if (params.get('final-check')) {
          location.href = '/final-check'
       } else {
-         if (dependents.length != []) {
+         if (params.get('household')) {
             location.href = "/household";
          } else {
             location.href = "/direction";

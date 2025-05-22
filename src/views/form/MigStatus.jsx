@@ -4,57 +4,24 @@ import { useSearchParams } from 'react-router-dom'
 
 const client = getSessionToJSON('client')
 const dependents = getSessionToJSON('dependents', [])
-
+const all = [client, ...dependents].filter(cover => cover['citizen'] == false)
 
 export default function MigStatus() {
 
   const [qParams, setQParams] = useSearchParams()
   const [showMigs, setShowMigs] = useState(false)
   const [promptValue, setPromptValue] = useState('')
-  const [current, setCurrent] = useState({})
 
 
 
-  const k = parseInt(qParams.get('k') ?? -1)
+  const k = parseInt(qParams.get('k')) || 0
 
   const [disabled, setDisabled] = useState(false)
 
-  if (k === dependents.length) {
-    location.href = '/mig-status-2'
-  }
-  useEffect(() => {
-
-    setShowMigs(false)
-    setPromptValue('')
-    setCurrent(k < 0 ? client : dependents[k])
 
 
-  }, [k])
-
-  useEffect(() => {
-    console.log(current);
-
-    if (current['citizen'] == 'true') {
 
 
-      if ((k + 1) == dependents.length - 1) {
-        location.href = '/mig-status-2'
-      } else {
-        if (dependents[k + 1]['citizen'] == 'false') {
-          setQParams({ k: k + 1 })
-
-
-        } else {
-          setQParams({ k: k + 2 })
-
-
-        }
-      }
-
-    }
-
-
-  }, [current])
 
 
   const goTo = (e) => {
@@ -62,46 +29,30 @@ export default function MigStatus() {
 
     const data = new FormData(e.target)
 
-    if (k < 0) {
-      data.entries().forEach(([key, value]) => {
 
-        if (value === 'on') return
-        client[key] = value
+    data.entries().forEach(([key, value]) => {
+      if (value === 'on') return
+      all[k][key] = value
+    })
 
-      })
+    all.forEach((cover, i) => {
 
-      sessionStorage.setItem('client', JSON.stringify(client))
-
-    } else {
-      data.entries().forEach(([key, value]) => {
-
-        if (value === 'on') return
-        dependents[k][key] = value
-
-      })
-
-      sessionStorage.setItem('dependents', JSON.stringify(dependents))
-
-
-    }
-
-    if (dependents.length === 0) location.href = '/mig-status-2'
-
-    if (k == dependents.length - 1) {
-      location.href = '/mig-status-2'
-
-    } else {
-      if (dependents[k + 1]['citizen'] === "false") {
-
-        setQParams({ k: k + 1 })
-
+      if (cover === client) {
+        setSessionToJSON('client', cover)
       } else {
-        setQParams({ k: k + 2 })
-
+        dependents[k - 1] = cover
+        setSessionToJSON('dependents', dependents)
       }
-      location.reload()
 
+    })
+
+    if ((k + 1) == all.length) {
+      location.href = '/mig-status-2'
+    } else {
+      console.log(k);
     }
+
+
 
   }
 
@@ -109,13 +60,13 @@ export default function MigStatus() {
   return (
     <form className="mig-status mb-20" method="POST" onSubmit={goTo}>
 
-      <h2 className="section-title">Estatus Migratorio de {current['first-name'] ?? ''}</h2>
+      <h2 className="section-title">Estatus Migratorio de {all[k]['first-name'] ?? ''}</h2>
 
       <div className="yellow-bordered-container">
         <div className="text">
 
           <h2 className="section-title">La Acci&oacute;n Diferida para los Llegados en la Infancia (DACA) ya no es un estatus migratorio elegible en Florida.</h2>
-          <p><b>No seleccione "Si"</b> a continuaci&oacute;n si {current['first-name'] ?? ''}:</p>
+          <p><b>No seleccione "Si"</b> a continuaci&oacute;n si {all[k]['first-name'] ?? ''}:</p>
 
           <ul>
             <li>Tiene el estatus de Acci&oacute;n Diferida como beneficiario de la Acci&oacute;n Diferida para los Llegados en la Infancia (DACA)</li>
@@ -125,11 +76,11 @@ export default function MigStatus() {
 
       </div>
 
-      <p><b>Tiene {current['first-name'] ?? ''} estatus de inmigracion elegible</b></p>
+      <p><b>Tiene {all[k]['first-name'] ?? ''} estatus de inmigracion elegible</b></p>
 
       <label htmlFor="status-yes" className="radio-label">
         <input type="radio" name="elegible-mig-status" id="status-yes" value={'si'} onChange={e => setShowMigs(true)} />
-        <span>Si. {current['first-name'] ?? ''} tiene un estatus de inmigracion elegible.</span>
+        <span>Si. {all[k]['first-name'] ?? ''} tiene un estatus de inmigracion elegible.</span>
       </label>
       <label htmlFor="status-no" className="radio-label">
         <input type="radio" name="elegible-mig-status" id="status-no" value={'no'} onChange={e => {
@@ -138,7 +89,7 @@ export default function MigStatus() {
         }}
         />
         <span>Me gustaria continuar con la solicitud sin responder esta pregunta. Entiendo que si no
-          la respondo. <b>{current['first-name'] ?? ''} no sera elegible para la cobertura <br /> completa de Medicaid o del Mercado</b> y solo sera considerado para la cobertura de servicios de emergencia,          incluyendo los servicios de parto y nacimiento.</span>
+          la respondo. <b>{all[k]['first-name'] ?? ''} no sera elegible para la cobertura <br /> completa de Medicaid o del Mercado</b> y solo sera considerado para la cobertura de servicios de emergencia,          incluyendo los servicios de parto y nacimiento.</span>
       </label>
 
 
@@ -146,7 +97,7 @@ export default function MigStatus() {
         showMigs && (
 
           <div className="form-section">
-            <p><b>Seleccione el tipo de documento que corresponde con la documentaci&oacute;n y el estatus mas reciente de {current['first-name'] ?? ''}</b></p>
+            <p><b>Seleccione el tipo de documento que corresponde con la documentaci&oacute;n y el estatus mas reciente de {all[k]['first-name'] ?? ''}</b></p>
             <p className="caption">Opcional</p>
 
 
@@ -155,7 +106,7 @@ export default function MigStatus() {
 
               <label htmlFor='permanent-resident' className="radio-label">
 
-                <input type="radio" name="mig-status" id="permanent-resident" onChange={e => setPromptValue(e.target.id)} disabled={disabled} />
+                <input type="radio" name="mig-status" id="permanent-resident" onChange={e => setPromptValue(e.target.id)} checked={promptValue === 'permanent-resident'} disabled={disabled} />
 
                 <div className="text">
 
@@ -182,7 +133,7 @@ export default function MigStatus() {
 
               <label htmlFor='inmigrant-visa' className="radio-label">
 
-                <input type="radio" name="mig-status" id="inmigrant-visa" onChange={e => setPromptValue(e.target.id)} value={'I-551'} disabled={disabled} />
+                <input type="radio" name="mig-status" id="inmigrant-visa" onChange={e => setPromptValue(e.target.id)} value={'I-551'} disabled={disabled} checked={promptValue === 'inmigrant-visa'} />
 
                 <div className="text">
 
@@ -203,7 +154,7 @@ export default function MigStatus() {
 
               <label htmlFor='employee-auth' className="radio-label">
 
-                <input type="radio" name="mig-status" id="employee-auth" onChange={e => setPromptValue(e.target.id)} disabled={disabled} />
+                <input type="radio" name="mig-status" id="employee-auth" onChange={e => setPromptValue(e.target.id)} disabled={disabled} checked={promptValue === 'employee-auth'} />
 
                 <div className="text">
 
@@ -221,7 +172,7 @@ export default function MigStatus() {
 
               <label htmlFor='in/out' className="radio-label">
 
-                <input type="radio" name="mig-status" id="in/out" onChange={e => setPromptValue(e.target.id)} disabled={disabled} />
+                <input type="radio" name="mig-status" id="in/out" onChange={e => setPromptValue(e.target.id)} disabled={disabled} checked={promptValue === 'in/out'} />
 
                 <div className="text">
 
@@ -248,7 +199,7 @@ export default function MigStatus() {
 
               <label htmlFor='travel-docs' className="radio-label">
 
-                <input type="radio" name="mig-status" id="travel-docs" onChange={e => setPromptValue(e.target.id)} value={'I-571'} disabled={disabled} />
+                <input type="radio" name="mig-status" id="travel-docs" onChange={e => setPromptValue(e.target.id)} value={'I-571'} disabled={disabled} checked={promptValue === 'travel-docs'} />
 
                 <div className="text">
 
@@ -266,7 +217,7 @@ export default function MigStatus() {
 
               <label htmlFor='no-inmigrant-status' className="radio-label">
 
-                <input type="radio" name="mig-status" id="no-inmigrant-status" onChange={e => setPromptValue(e.target.id)} disabled={disabled} />
+                <input type="radio" name="mig-status" id="no-inmigrant-status" onChange={e => setPromptValue(e.target.id)} disabled={disabled} checked={promptValue === 'no-inmigrant-status'} />
 
                 <div className="text">
 
@@ -293,7 +244,7 @@ export default function MigStatus() {
 
               <label htmlFor='action-advise' className="radio-label">
 
-                <input type="radio" name="mig-status" id="action-advise" onChange={e => setPromptValue(e.target.id)} value={'I-797'} disabled={disabled} />
+                <input type="radio" name="mig-status" id="action-advise" onChange={e => setPromptValue(e.target.id)} value={'I-797'} disabled={disabled} checked={promptValue === 'action-advise'} />
 
                 <div className="text">
 
@@ -312,7 +263,7 @@ export default function MigStatus() {
 
               <label htmlFor='other' className="radio-label">
 
-                <input type="radio" name="mig-status" id="other" onChange={e => setPromptValue(e.target.id)} disabled={disabled} />
+                <input type="radio" name="mig-status" id="other" onChange={e => setPromptValue(e.target.id)} disabled={disabled} checked={promptValue === 'other'} />
 
                 <div className="text">
 
@@ -335,7 +286,7 @@ export default function MigStatus() {
 
               <label htmlFor='passport' className="radio-label">
 
-                <input type="radio" name="mig-status" id="passport" onChange={e => setPromptValue(e.target.id)} value={'pasaporte'} disabled={disabled} />
+                <input type="radio" name="mig-status" id="passport" onChange={e => setPromptValue(e.target.id)} checked={promptValue === 'passport'} value={'pasaporte'} disabled={disabled} />
 
                 <div className="text">
 
@@ -353,14 +304,16 @@ export default function MigStatus() {
 
             <hr />
             <label htmlFor="none" className="radio-label">
-              <input type="radio" name="mig-status" id="none" onClick={e => setPromptValue('none')} onChange={e => setDisabled(true)} />
+              <input type="radio" name="mig-status" id="none" onClick={e => setPromptValue('none')} checked={promptValue === 'none'} onChange={e => setDisabled(true)} required />
               <span>Ninguno de estos</span>
             </label>
 
             <label htmlFor="delete">
 
-              <button type="button" className="blue-btn" >Borrar su selecci&oacute;n</button>
-              <input className='hidden' type="radio" name="mig-status" id="delete" />
+              <button type="button" className="blue-btn" onClick={e => {
+                setPromptValue('')
+                setDisabled(false)
+              }}>Borrar su selecci&oacute;n</button>
             </label>
 
 

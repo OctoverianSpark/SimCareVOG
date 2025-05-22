@@ -5,48 +5,16 @@ import { useSearchParams } from 'react-router-dom'
 
 const client = getSessionToJSON('client')
 const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(cover => cover.citizen === false)
 
 
 export default function MigStatus2() {
 
-  const [current, setCurrent] = useState({})
   const [qParams, setQParams] = useSearchParams()
   const [disabled, setDisabled] = useState()
 
-  const k = parseInt(qParams.get('k') ?? -1)
+  const k = parseInt(qParams.get('k')) || 0
 
-  useEffect(() => {
-
-    setCurrent(k < 0 ? client : dependents[k])
-
-  }, [k])
-
-  if (dependents.length === k) {
-    location.href = '/militar-service'
-  }
-
-  useEffect(() => {
-
-    setDisabled(false)
-    if (current['citizen'] == 'true') {
-
-
-      if ((k) == dependents.length - 1) {
-        location.href = '/mig-status-2'
-      } else {
-        if (dependents[k + 1]['citizen'] == 'false') {
-          setQParams({ k: k + 1 })
-
-        } else {
-          setQParams({ k: k + 2 })
-
-        }
-      }
-
-    }
-
-
-  }, [current])
 
 
 
@@ -54,23 +22,36 @@ export default function MigStatus2() {
     e.preventDefault()
 
 
-    if (dependents.length === 0) location.href = '/militar-service'
+    const data = new FormData(e.target)
 
+    all[k]['status'] = data.getAll('status') || 'Ninguno de estos'
+    all[k]['stranger-number'] = data.get('stranger-number') || ''
+    all[k]['card-number'] = data.get('card-number') || ''
+    all[k]['exp-day'] = data.get('exp-day') || ''
+    all[k]['exp-month'] = data.get('exp-month') || ''
+    all[k]['exp-year'] = data.get('exp-year') || ''
 
-    if (k == dependents.length - 1) {
-      location.href = '/militar-service'
+    all.forEach((cover, i) => {
 
-    } else {
-      if (dependents[k + 1]['citizen'] === "false") {
-
-        setQParams({ k: k + 1 })
-
+      if (cover === client) {
+        setSessionToJSON('client', cover)
       } else {
-        setQParams({ k: k + 2 })
-
+        dependents[k - 1] = cover
+        setSessionToJSON('dependents', dependents)
       }
 
+    })
+
+    if ((k + 1) === all.length) {
+      location.href = '/disabilities'
+    } else {
+      location.href = `/mig-status-2?k=${k + 1}`
     }
+
+
+
+
+
 
   }
 
@@ -78,23 +59,17 @@ export default function MigStatus2() {
 
     <form method='POST' className="mig-status-2" onSubmit={goTo}>
 
-      <h2 className="section-title">Estatus migratorio de {current['first-name']}</h2>
+      <h2 className="section-title">Estatus migratorio de {all[k]['first-name']}</h2>
 
       <p>Todas las preguntas sobre el estatus migratorio son opcionales, pero contestarlas hara que el obtener cobertura sea mas facil.</p>
 
       <label htmlFor="stranger-number" className="label-input">
-        <span>El n&uacute;mero extranjero de {current['first-name']}</span>
+        <span>El n&uacute;mero extranjero de {all[k]['first-name']}</span>
         <span className="caption">Opcional</span>
         <input type="text" name="stranger-number" id="stranger-number" defaultValue={'A-'} />
       </label>
       <label htmlFor="card-number" className="label-input">
-        <span>N&uacute;mero de tarjeta de {current['first-name']}</span>
-        <span className="caption">Opcional</span>
-        <input type="text" name="card-number" id="card-number" />
-      </label>
-
-      <label htmlFor="card-number" className="label-input">
-        <span>N&uacute;mero de tarjeta de {current['first-name']}</span>
+        <span>N&uacute;mero de tarjeta de {all[k]['first-name']}</span>
         <span className="caption">Opcional</span>
         <input type="text" name="card-number" id="card-number" />
       </label>
@@ -133,7 +108,7 @@ export default function MigStatus2() {
       </div>
 
 
-      <p><b>Tiene {current['first-name']} uno de estos tipos de documentos o estatus?</b></p>
+      <p><b>Tiene {all[k]['first-name']} uno de estos tipos de documentos o estatus?</b></p>
       <span className="caption">Opcional.</span>
 
 

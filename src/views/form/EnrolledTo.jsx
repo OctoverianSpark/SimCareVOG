@@ -1,22 +1,37 @@
 import React from 'react'
 import { getSessionToJSON } from '../../utils/functions'
+import { useSearchParams } from 'react-router-dom'
 
 const client = getSessionToJSON('client')
+const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(x => Boolean(x['cover']) == true)
 export default function EnrolledTo() {
+
+  const [params] = useSearchParams()
+
+  const k = parseInt(params.get('k')) || 0
 
   const goTo = e => {
     e.preventDefault()
-    location.href = 'hra-info'
+    if (k + 1 < all.length) {
+
+      location.href = `/enrolled-to?k=${k + 1}`
+
+    } else {
+
+      location.href = 'hra-info'
+    }
   }
+
 
 
   return (
     <form method="post" className="enrolled-to" onSubmit={goTo}>
 
-      <h2 className="section-title">Cobertura actual de {client['first-name']}</h2>
+      <h2 className="section-title">Cobertura actual de {all[k]['first-name']}</h2>
 
 
-      <p><b>Que tipo de cobertura tiene Alicia?</b></p>
+      <p><b>Que tipo de cobertura tiene {all[k]['first-name']}?</b></p>
 
 
       <label htmlFor="marketplace-cover" className="checkbox-label">

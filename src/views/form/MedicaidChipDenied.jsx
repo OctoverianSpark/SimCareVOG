@@ -1,13 +1,17 @@
 import React, { useState } from 'react'
 import { getSessionToJSON, setSessionToJSON } from '../../utils/functions'
+import { useSearchParams } from 'react-router-dom'
 
 
 const client = getSessionToJSON('client')
+const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(x => Boolean(x['cover']) == true)
 
 export default function MedicaidChipDenied() {
 
   const [denegated, setDenied] = useState(false)
-
+  const [params, setParams] = useSearchParams()
+  const k = params.get('k')
 
   const goTo = e => {
     e.preventDefault()
@@ -17,19 +21,29 @@ export default function MedicaidChipDenied() {
     formData.entries().forEach(([key, value]) => {
 
 
-      client[key] = value
+      all[k][key] = value
 
     })
 
-    if (client['medicaid-chip-denied'] === 'no') {
-      delete client["medicaid-chip-denied-day"]
-      delete client["medicaid-chip-denied-month"]
-      delete client["medicaid-chip-denied-year"]
+    if (all[k]['medicaid-chip-denied'] === 'no') {
+      delete all[k]["medicaid-chip-denied-day"]
+      delete all[k]["medicaid-chip-denied-month"]
+      delete all[k]["medicaid-chip-denied-year"]
     }
 
-    setSessionToJSON('client', client)
+    if (k == 0) {
+      setSessionToJSON('client', all[k])
+    } else {
+      dependents[k - 1] = all[k]
+      setSessionToJSON('dependents', dependents)
+    }
 
-    location.href = '/income-info'
+    if ((k + 1) < all.length) {
+      location.href = `/medicaid-chip-denied?k=${parseInt(k) + 1}`
+    } else {
+
+      location.href = '/income-info'
+    }
 
   }
 
@@ -38,7 +52,7 @@ export default function MedicaidChipDenied() {
 
       <h1 className="section-title">Denegaci&oacute;n reciente de Medicaid o CHIP</h1>
 
-      <p><b>Se encontr&oacute; que {client['first-name']} no es elegible para Medicaid o CHIP desde 21/1/{new Date().getFullYear()}</b></p>
+      <p><b>Se encontr&oacute; que {all[k]['first-name']} no es elegible para Medicaid o CHIP desde 21/1/{new Date().getFullYear()}</b></p>
 
 
       <label className="radio-label" htmlFor='yes'>
@@ -57,7 +71,7 @@ export default function MedicaidChipDenied() {
         denegated && (
           <div className="form-section">
 
-            <p><b>Ingrese la fecha en la carta de rechazo de {client['first-name']}</b></p>
+            <p><b>Ingrese la fecha en la carta de rechazo de {all[k]['first-name']}</b></p>
             <span className="caption">Si no lo tiene, de su mejor estimaci&oacute;n</span>
             <span className="caption">Por ejemplo: 21/4/{new Date().getFullYear()}</span>
 

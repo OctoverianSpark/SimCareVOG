@@ -26,10 +26,15 @@ export default function HouseHold() {
         <p><b>Necesita cobertura</b></p>
 
 
-        <div className="household-block">
-          <p><span>{client['first-name']}</span></p>
-          <a href="/about-me">Editar</a>
-        </div>
+        {
+          client['cover'] === 'true' && (
+
+            <div className="household-block">
+              <p><span>{client['first-name']}</span></p>
+              <a href="/about-me?household=true">Editar</a>
+            </div>
+          )
+        }
         {
 
           Object.keys(dependents).map(key => {
@@ -63,12 +68,10 @@ export default function HouseHold() {
 
             <div className="household-block">
               <p><span>{client['first-name']}</span></p>
-              <a href="/about-me">Editar</a>
+              <a href="/about-me?household=true">Editar</a>
             </div>
           )
         }
-
-
         {
 
           Object.keys(dependents).map(key => {

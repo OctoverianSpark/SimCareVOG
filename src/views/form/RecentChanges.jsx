@@ -1,13 +1,17 @@
 import React, { useState } from 'react'
 import { getSessionToJSON, setSessionToJSON } from '../../utils/functions'
+import { useSearchParams } from 'react-router-dom'
 
 const client = getSessionToJSON('client')
+const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(x => Boolean(x['cover']) == true)
 
 
 export default function RecentChanges() {
 
   const [openDate, setOpenDate] = useState(false)
-
+  const [params] = useSearchParams()
+  const k = parseInt(params.get('k')) || 0
 
   const goTo = e => {
     e.preventDefault()
@@ -16,12 +20,20 @@ export default function RecentChanges() {
 
 
     data.entries().forEach(([key, value]) => {
-      client[key] = value
+      all[k][key] = value
     })
 
-    setSessionToJSON('client', client)
-
-    location.href = '/future-changes'
+    if (k == 0) {
+      setSessionToJSON('client', all[k])
+    } else {
+      dependents[k - 1] = all[k]
+      setSessionToJSON('dependents', dependents)
+    }
+    if ((k + 1) < all.length) {
+      location.href = `/recent-changes?k=${k + 1}`
+    } else {
+      location.href = '/future-changes'
+    }
 
 
   }
@@ -30,7 +42,7 @@ export default function RecentChanges() {
     <form method="post" className="recent-changes" onSubmit={goTo}>
       <h2 className="section-title">D&iacute;ganos sobre cualquier cambio reciente</h2>
 
-      <p><b>Perdi&oacute; {client['first-name']} la cobertura m&eacute;dica elegible entre 20/2/{new Date().getFullYear()} y 21/4/{new Date().getFullYear()}?</b></p>
+      <p><b>Perdi&oacute; {all[k]['first-name']} la cobertura m&eacute;dica elegible entre 20/2/{new Date().getFullYear()} y 21/4/{new Date().getFullYear()}?</b></p>
 
 
       <label htmlFor="yes" className="radio-label">
@@ -50,7 +62,7 @@ export default function RecentChanges() {
 
             <div className="container-inputs">
               <label className="label-input">
-                <p><b>Cu&aacute;l fue el &uacute;ltimo dia de cobertura de {client['first-name']}</b></p>
+                <p><b>Cu&aacute;l fue el &uacute;ltimo dia de cobertura de {all[k]['first-name']}</b></p>
 
                 <div className="dob-inputs">
                   <input

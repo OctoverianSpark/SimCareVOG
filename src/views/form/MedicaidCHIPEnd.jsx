@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
 import { getSessionToJSON, setSessionToJSON } from '../../utils/functions'
+import { useSearchParams } from 'react-router-dom'
 
 
 const client = getSessionToJSON('client')
+const dependents = getSessionToJSON('dependents', [])
+
+const all = [client, ...dependents].filter(x => Boolean(x['cover']) == true)
 
 export default function MedicaidCHIPEnd() {
 
   const [ended, setEnded] = useState(false)
-
-
+  const [params] = useSearchParams()
+  const k = parseInt(params.get('k')) || 0
   const goTo = e => {
     e.preventDefault()
 
@@ -17,19 +21,30 @@ export default function MedicaidCHIPEnd() {
     formData.entries().forEach(([key, value]) => {
 
 
-      client[key] = value
+      all[k][key] = value
 
     })
 
-    if (client['medicaid-chip-ends'] === 'no') {
-      delete client["medicaid-chip-end-day"]
-      delete client["medicaid-chip-end-month"]
-      delete client["medicaid-chip-end-year"]
+    if (all[k]['medicaid-chip-ends'] === 'no') {
+      delete all[k]["medicaid-chip-end-day"]
+      delete all[k]["medicaid-chip-end-month"]
+      delete all[k]["medicaid-chip-end-year"]
     }
 
-    setSessionToJSON('client', client)
+    if (k == 0) {
+      setSessionToJSON('client', all[k])
+    } else {
+      dependents[k - 1] = all[k]
+      setSessionToJSON('dependents', dependents)
+    }
 
-    location.href = '/medicaid-chip-denied'
+    if ((k + 1) < all.length) {
+      location.href = `/medicaid-chip-end?k=${k + 1}`
+    } else {
+      location.href = '/medicaid-chip-denied?k=0'
+
+    }
+
 
 
   }
@@ -37,11 +52,11 @@ export default function MedicaidCHIPEnd() {
   return (
     <form className="medicaid-chip-ends w-120" onSubmit={goTo}>
 
-      <p><b>{client['first-name']} tenia Medicaid o CHIP que terminaron recientemente o terminar&aacute;n pronto?</b></p>
+      <p><b>{all[k]['first-name']} tenia Medicaid o CHIP que terminaron recientemente o terminar&aacute;n pronto?</b></p>
       <span className="caption">Seleccione Si si uno le aplica:</span>
       <ul>
-        <li className="caption">La cobertura de {client['first-name']} termin&oacute; entre 21/1/{new Date().getFullYear()} y hoy</li>
-        <li className="caption">La cobertura de {client['first-name']} termin&oacute; entre hoy y 20/6/{new Date().getFullYear()}</li>
+        <li className="caption">La cobertura de {all[k]['first-name']} termin&oacute; entre 21/1/{new Date().getFullYear()} y hoy</li>
+        <li className="caption">La cobertura de {all[k]['first-name']} termin&oacute; entre hoy y 20/6/{new Date().getFullYear()}</li>
       </ul>
 
       <label htmlFor="yes" className="radio-label">

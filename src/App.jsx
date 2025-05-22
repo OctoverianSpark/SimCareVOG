@@ -23,7 +23,6 @@ import HouseInfo from './views/form/HouseInfo.jsx'
 import HomeInfo from './views/form/HomeInfo.jsx'
 import SSNCheck from './views/form/SSNCheck.jsx'
 import Citizenship from './views/form/Citizenship.jsx'
-import WhoIsNotCitizen from './views/form/WhoIsNotCitizen.jsx'
 import MigStatus from './views/form/MigStatus.jsx'
 import MigStatus2 from './views/form/MigStatus2.jsx'
 import MilitaryServices from './views/form/MilitaryServices.jsx'
@@ -108,7 +107,6 @@ export default function App() {
           <Route path='/home-info' element={<HomeInfo />} />
           <Route path='/ssn-check' element={<SSNCheck />} />
           <Route path='/citizenship' element={<Citizenship />} />
-          <Route path='/who-is-not-citizen' element={<WhoIsNotCitizen />} />
           <Route path='/mig-status' element={<MigStatus />} />
           <Route path='/mig-status-2' element={<MigStatus2 />} />
           <Route path='/militar-service' element={<MilitaryServices />} />
