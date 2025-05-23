@@ -18,7 +18,6 @@ export default function Citizenship() {
       cover.citizen = data.get(i) === 'false' ? false : true
 
     })
-    console.log(all);
 
     setSessionToJSON('client', all[0])
 
@@ -42,7 +41,7 @@ export default function Citizenship() {
       <h2 className="section-title">Ciudadania y estatus migratorio</h2>
 
 
-      <p><b>Alguna de las personas que aplican por cobertura son ciudadanos estadounidenses?</b></p>
+      <p><b>Todas las personas que solicitan cobertura son ciudadanos estadounidenses?</b></p>
 
       <label
         className="radio-label"
@@ -81,7 +80,7 @@ export default function Citizenship() {
 
           <div className="form-section">
 
-            <p><b>Alguno de ellos no es ciudadano estadounidense?</b></p>
+            <p><b>¿Cuáles de estas personas no son ciudadanos estadounidenses <br />o nacionales de Estados Unidos?</b></p>
 
             {
               all.map((cover, i) => (

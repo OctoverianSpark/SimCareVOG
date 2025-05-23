@@ -1,37 +1,52 @@
 import React, { useState } from 'react'
 import { getSessionToJSON, setSessionToJSON } from '../../utils/functions'
+import { useSearchParams } from 'react-router-dom'
 
 
 
 const client = getSessionToJSON('client')
+const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(x => x['cover'] == 'true' || x['cover'] == true)
+
 export default function LifeChanges() {
 
   const [disabled, setDisabled] = useState(false)
   const [required, setRequired] = useState(false)
+  const [params] = useSearchParams()
+
+  const k = parseInt(params.get('k')) || 0
 
   const goTo = e => {
     e.preventDefault()
 
     const data = new FormData(e.target)
-    client['life-change'] = []
+    all[k]['life-change'] = data.getAll('life-change')
 
-    if (!data.get('life-change')) {
-      setRequired(true)
-      return
-    }
+    all.forEach((x, i) => {
 
-    setRequired(false)
+      if (x == client) {
 
-    data.entries().forEach(([key, value]) => {
+        setSessionToJSON('client', x)
+      } else {
 
+        dependents.forEach((dep, index) => {
+          if (x == dep) {
+            dependents[index] = x
+          }
+        })
+        setSessionToJSON('dependents', dependents)
 
-      client[key].push(value)
+      }
 
     })
 
-    setSessionToJSON('client', client)
+    if ((k + 1) < all.length) {
+      location.href = `/life-changes?k=${k + 1}`
+    } else {
+      location.href = 'final-section-welcome'
 
-    location.href = 'final-section-welcome'
+    }
+
 
   }
 
@@ -40,7 +55,7 @@ export default function LifeChanges() {
 
       <h2 className="section-title">D&iacute;ganos sobre cualquier cambio de vida</h2>
 
-      <p><b>Ha tenido {client['first-name']} cualquiera de estos cambios hace 20/2/{new Date().getFullYear()}</b></p>
+      <p><b>Ha tenido {all[k]['first-name']} cualquiera de estos cambios hace 20/2/{new Date().getFullYear()}</b></p>
 
       <label htmlFor="life-change-married" className="checkbox-label">
         <input type="checkbox" name="life-change" id="life-change-married" value={'Casarse'} disabled={disabled} required={required} />

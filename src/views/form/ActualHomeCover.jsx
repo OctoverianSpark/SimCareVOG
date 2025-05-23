@@ -1,27 +1,48 @@
 import React from 'react'
 import { getSessionToJSON, setSessionToJSON } from '../../utils/functions'
+import { useSearchParams } from 'react-router-dom'
 
 
 const client = getSessionToJSON('client')
 const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(x => x['cover'] == 'true' || x['cover'] == true)
 
 
 export default function ActualHomeCover() {
+  const [params] = useSearchParams()
 
+  const k = parseInt(params.get('k')) || 0
 
   const goTo = e => {
     e.preventDefault()
 
     const data = new FormData(e.target)
 
-    client['actually-enrolled'] = data.get('actually-enrolled')
+    all[k]['actually-enrolled'] = data.get('actually-enrolled')
+
+    all.forEach((cover, i) => {
+      if (cover == client) {
+        setSessionToJSON('client', cover)
+      } else {
+        dependents.forEach((dep, index) => {
+          if (cover == dep) {
+            dependents[index] = cover
+          }
+        })
+        setSessionToJSON('dependents', dependents)
+      }
+    })
 
 
-    setSessionToJSON('client', client)
-    if (data.get('actually-enrolled') === 'si') {
-      location.href = '/enrolled-to'
+    if ((k + 1) < all.length) {
+      location.href = `/actual-home-cover?k=${k + 1}`
     } else {
-      location.href = '/hra-info'
+
+      if (data.get('actually-enrolled') === 'si') {
+        location.href = '/enrolled-to'
+      } else {
+        location.href = '/hra-info'
+      }
     }
 
   }
@@ -30,7 +51,7 @@ export default function ActualHomeCover() {
   return (
     <form className='actual-home-cover' method="post" onSubmit={goTo}>
       <h2 className="section-title">La cobertura actual de su hogar</h2>
-      <p><b>Est&aacute; {client['first-name']} actualmente inscrito en la cobertura m&eacute;dica?</b></p>
+      <p><b>Est&aacute; {all[k]['first-name']} actualmente inscrito en la cobertura m&eacute;dica?</b></p>
       <p className="caption">Seleccione "Si" s&oacute;lo si seguir&aacute;n teniendo la misma cobertura que tienen ahora a partir de 20/6/{new Date().getFullYear()}</p>
 
 

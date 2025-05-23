@@ -9,9 +9,8 @@ const dependents = getSessionToJSON('dependents', [])
 
 export default function HomeTaxDeclarations() {
 
-  
+
   const [showDependents, setShow] = useState(false)
-  const [marriage, setMarriage] = useState({})
   const [dependentsForm, setDependentsForm] = useState(false)
 
   useEffect(() => {
@@ -69,11 +68,10 @@ export default function HomeTaxDeclarations() {
 
     body['cover'] = false
 
-    console.log(body)
     setShow(false)
 
     dependents.push(body)
-    setDependents(dependents)
+
     sessionStorage.setItem('dependents', JSON.stringify(dependents))
 
     setTimeout(() => {

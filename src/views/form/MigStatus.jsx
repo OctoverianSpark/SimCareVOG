@@ -19,11 +19,6 @@ export default function MigStatus() {
   const [disabled, setDisabled] = useState(false)
 
 
-
-
-
-
-
   const goTo = (e) => {
     e.preventDefault()
 
@@ -49,7 +44,7 @@ export default function MigStatus() {
     if ((k + 1) == all.length) {
       location.href = '/mig-status-2'
     } else {
-      console.log(k);
+      location.href = `/mig-status?k=${k + 1}`
     }
 
 

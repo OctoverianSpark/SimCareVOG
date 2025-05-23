@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 
 const client = getSessionToJSON('client')
 const dependents = getSessionToJSON('dependents', [])
-const all = [client, ...dependents].filter(x => Boolean(x['cover']) == true)
+const all = [client, ...dependents].filter(x => x['actually-enrolled'] === 'si')
 export default function EnrolledTo() {
 
   const [params] = useSearchParams()
