@@ -36,25 +36,22 @@ export default function SSNCheck() {
 
 		all.forEach((cover, i) => {
 			if (cover === client) {
-				setSessionToJSON('client', cover)
+				setSessionToJSON('client', all[i])
 			} else {
-				dependents[k - 1] = cover
+				dependents.forEach((dep, index) => {
+					if (cover === dep) {
+						dependents[index] = cover
+					}
+				})
 				setSessionToJSON('dependents', dependents)
 			}
 		})
 
-		if ((k + 1) === all.length) {
-			if (all.filter(cover => cover['ssn'] != '').length === 0) {
-				alert('El SSN debe ser ingresado por al menos un miembro')
-				location.href = '/ssn-check'
-			} else {
-				location.href = '/citizenship'
-			}
-		}
-		else {
+		if (k + 1 < all.length) {
 			location.href = `/ssn-check?k=${k + 1}`
+		} else {
+			location.href = '/citizenship'
 		}
-
 	}
 
 
