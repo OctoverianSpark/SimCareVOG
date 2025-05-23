@@ -46,18 +46,16 @@ export default function Sign() {
         if (videoBlob) {
           clearInterval(check);
           submitForm(e.target);
+          
         }
-        alert('Espera un momento, estas siendo redirigido...')
       }, 500);
 
 
-      setTimeout(() => {
-        location.href = '/congratulations'
-      }, 1200);
     }
   };
 
   async function submitForm(formElement) {
+    alert('Estamos guardando tus datos, Espera un momento...')
     const formData = new FormData(formElement);
     const file = new File([videoBlob], 'grabacion.webm', { type: 'video/webm' });
 
@@ -78,6 +76,8 @@ export default function Sign() {
       });
 
       console.log('✅ Enviado correctamente', res.data);
+      
+      location.href = '/congratulations'
     } catch (err) {
       console.error('❌ Error al enviar datos:', err);
     }
