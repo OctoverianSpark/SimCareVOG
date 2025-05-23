@@ -12,7 +12,7 @@ export default function HomeTaxDeclarations() {
 
   const [showDependents, setShow] = useState(false)
   const [dependentsForm, setDependentsForm] = useState(false)
-
+  const [marriage, setMarriage] = useState({})
   useEffect(() => {
 
     Object.keys(dependents).forEach(key => {
