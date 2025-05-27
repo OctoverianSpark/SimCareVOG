@@ -9,41 +9,61 @@ const all = [client, ...dependents].filter(x => Boolean(x['cover']) == true)
 
 export default function MedicaidChipDenied() {
 
-  const [denegated, setDenied] = useState(false)
-  const [params, setParams] = useSearchParams()
-  const k = params.get('k')
+
+  const [dates, setDates] = useState(all.map(x => false))
+  const [disabled, setDisabled] = useState(false)
+
+  const openDate = (index, e) => {
+
+
+    setDates(prev => {
+      const newArr = [...prev]
+      newArr[index] = e.target.checked
+      return newArr
+
+    })
+
+
+  }
+
+  const closeDates = e => {
+
+    setDates(all.map(x => false))
+    setDisabled(e.target.checked)
+
+
+
+  }
 
   const goTo = e => {
     e.preventDefault()
 
     const formData = new FormData(e.target)
 
+
     formData.entries().forEach(([key, value]) => {
+      const splitedKey = key.split(',')
 
-
-      all[k][key] = value
-
+      all[splitedKey[1]][splitedKey[0]] = value
+      console.log(splitedKey, value)
     })
 
-    if (all[k]['medicaid-chip-denied'] === 'no') {
-      delete all[k]["medicaid-chip-denied-day"]
-      delete all[k]["medicaid-chip-denied-month"]
-      delete all[k]["medicaid-chip-denied-year"]
-    }
+    all.forEach((cover, i) => {
+      if (cover === client) {
+        setSessionToJSON('client', cover)
+      } else {
+        dependents.forEach(dep => {
+          if (cover === dep) {
+            dependents[i - 1] = cover
+          }
+        })
 
-    if (k == 0) {
-      setSessionToJSON('client', all[k])
-    } else {
-      dependents[k - 1] = all[k]
-      setSessionToJSON('dependents', dependents)
-    }
 
-    if ((k + 1) < all.length) {
-      location.href = `/medicaid-chip-denied?k=${parseInt(k) + 1}`
-    } else {
+        setSessionToJSON('dependents', dependents)
+      }
 
-      location.href = '/income-info'
-    }
+    })
+    location.href = '/income-info'
 
   }
 
@@ -51,68 +71,78 @@ export default function MedicaidChipDenied() {
     <form className="medicaid-chip-denied w-120" onSubmit={goTo}>
 
       <h1 className="section-title">Denegaci&oacute;n reciente de Medicaid o CHIP</h1>
+      <p><b>Se determin&oacute; que alguna de estas personas no era elegible para Medicaid o CHIP desde 21/2/{new Date().getFullYear()}</b></p>
 
-      <p><b>Se encontr&oacute; que {all[k]['first-name']} no es elegible para Medicaid o CHIP desde 21/1/{new Date().getFullYear()}</b></p>
 
-
-      <label className="radio-label" htmlFor='yes'>
-        <input type="radio" name="medicaid-chip-denied" value={'si'} id='yes' onChange={e => setDenied(true)} required />
-        <span>Si</span>
+      {
+        all.map((cover, i) => (
+          <label htmlFor={i} key={i} className="checkbox-label">
+            <input type="checkbox" name={`medicaid-chip-denied,${i}`} id={i} checked={dates[i] ?? false} onChange={e => openDate(i, e)} disabled={disabled} />
+            <span>{cover['first-name']}</span>
+          </label>
+        ))
+      }
+      <hr />
+      <label htmlFor='none' className="checkbox-label">
+        <input type="checkbox" id='none' onChange={closeDates} />
+        <span>Ninguna de estas personas</span>
       </label>
-      <label className="radio-label" htmlFor='no'>
-        <input type="radio" name="medicaid-chip-denied" value={'no'} id='no' onChange={e => setDenied(false)} required />
-        <span>No</span>
-      </label>
-
 
 
 
       {
-        denegated && (
-          <div className="form-section">
+        dates.map((date, i) => {
 
-            <p><b>Ingrese la fecha en la carta de rechazo de {all[k]['first-name']}</b></p>
-            <span className="caption">Si no lo tiene, de su mejor estimaci&oacute;n</span>
-            <span className="caption">Por ejemplo: 21/4/{new Date().getFullYear()}</span>
+          return date && (
 
-            <div className="container-inputs">
-              <label className="label-input" htmlFor="client-dob">
+            <>
 
-                <p className="caption">Este campo es requerido</p>
-                <div className="dob-inputs">
-                  <input
-                    type="number"
-                    id="medicaid-chip-denied-month"
-                    name="medicaid-chip-denied-month"
-                    placeholder="MM"
-                    min="1"
-                    max="12"
-                    required
-                  />
-                  <input
-                    type="number"
-                    id="medicaid-chip-denied-day"
-                    name="medicaid-chip-denied-day"
-                    placeholder="DD"
-                    min="1"
-                    max="31"
-                    required
-                  />
-                  <input
-                    type="number"
-                    id="medicaid-chip-denied-year"
-                    name="medicaid-chip-denied-year"
-                    placeholder="YYYY"
-                    min="1900"
-                    max={new Date().getFullYear()}
-                    required
-                  />
-                </div>
-              </label>
-            </div>
-          </div>
-        )
-      }
+              <div className="container-inputs">
+                <label className="label-input">
+                  <p><b>Ingrese la fecha en la carta de rechazo de {all[i]['first-name']}</b></p>
+
+                  <div className="dob-inputs">
+                    <input
+                      type="number"
+                      id="denied-month"
+                      name={`denied-month,${i}`}
+                      placeholder="MM"
+                      min="1"
+                      max="12"
+                      required
+                    />
+                    <input
+                      type="number"
+                      id="denied-day"
+                      name={`denied-day,${i}`}
+                      placeholder="DD"
+                      min="1"
+                      max="31"
+                      required
+                    />
+                    <input
+                      type="number"
+                      id="denied-year"
+                      name={`denied-year,${i}`}
+                      placeholder="YYYY"
+                      min="1900"
+                      max={new Date().getFullYear()}
+                      required
+                    />
+                  </div>
+                </label>
+              </div>
+
+
+              <br />
+            </>
+
+          )
+
+        }
+
+
+        )}
 
       <button type="submit" className="green-btn">Guardar y Continuar</button>
 

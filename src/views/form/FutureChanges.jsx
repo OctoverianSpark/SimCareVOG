@@ -10,7 +10,8 @@ const dependents = getSessionToJSON('dependents', [])
 const all = [client, ...dependents].filter(x => Boolean(x['cover']) == true)
 export default function FutureChanges() {
 
-  const [openDate, setOpenDate] = useState(false)
+  const [dates, setDates] = useState(all.map(x => false))
+  const [disabled, setDisabled] = useState(false)
 
   const [params] = useSearchParams()
 
@@ -21,85 +22,138 @@ export default function FutureChanges() {
 
     const data = new FormData(e.target)
 
-    all[k]['cover-will-be-lost'] = data.get('cover-will-be-lost')
+    data.entries().forEach(([key, value]) => {
 
-    if (k == 0) {
-      setSessionToJSON('client', all[k])
-    } else {
-      dependents[k - 1] = all[k]
-      setSessionToJSON('dependents', dependents)
-    }
-    if ((k + 1) < all.length) {
-      location.href = `/future-changes?k=${k + 1}`
-    } else {
+      const splitedKey = key.split(',')
+      all[splitedKey[1]][splitedKey[0]] = value
 
-      location.href = '/life-changes'
-    }
+    })
+
+
+    all.forEach((cover, i) => {
+
+      if (cover === client) {
+        setSessionToJSON('client', cover)
+      } else {
+        dependents.forEach(dep => {
+          if (cover === dep) {
+            dependents[i - 1] = cover
+          }
+        })
+
+
+        setSessionToJSON('dependents', dependents)
+      }
+    })
+
+    location.href = '/life-changes'
 
   }
+
+  const openDate = (index, e) => {
+
+
+    setDates(prev => {
+      const newArr = [...prev]
+      newArr[index] = e.target.checked
+      return newArr
+
+    })
+
+
+  }
+  const closeDates = e => {
+
+    setDates(all.map(x => false))
+    setDisabled(e.target.checked)
+
+
+
+  }
+
   return (
     <form className='future-changes' method="post" onSubmit={goTo}>
 
-      <h2 className="section-title">D&iacute;ganos sobre cualquier cambio reciente</h2>
-
-      <p><b>Perder&aacute; {all[k]['first-name']} la cobertura m&eacute;dica elegible entre 22/4/{new Date().getFullYear()} y 20/6/{new Date().getFullYear()}</b></p>
-
-      <label htmlFor="yes" className="radio-label">
-        <input type="radio" name="cover-will-be-lost" id="yes" value={'si'} onChange={() => setOpenDate(true)} />
-        <span>Si</span>
+      <h2 className="section-title">D&iacute;ganos sobre los pr&oacute;ximos cambios</h2>
+      <p><b>Alguien perder&aacute; la cobertura m&eacute;dica calificada entre 23/5/{new Date().getFullYear()} y 21/7/{new Date().getFullYear()} ?</b></p>
+      {
+        all.map((cover, i) => (
+          <label htmlFor={i} key={i} className="checkbox-label">
+            <input type="checkbox" name={'future-change,' + i} id={i} onChange={e => openDate(i, e)} checked={dates[i] === true} disabled={disabled} value={i} />
+            <span>{cover['first-name']}</span>
+          </label>
+        )
+        )
+      }
+      <hr />
+      <label htmlFor='none' className="checkbox-label">
+        <input type="checkbox" id='none' onChange={closeDates} />
+        <span>Ninguna de estas personas</span>
       </label>
 
-      <label htmlFor="no" className="radio-label">
-        <input type="radio" name="cover-will-be-lost" id="no" value={'no'} onChange={() => setOpenDate(false)} />
-        <span>No</span>
-      </label>
 
 
       {
-        openDate && (
+        dates.map((date, i) => {
 
-          <>
+          return date && (
 
+            <>
 
-            <div className="container-inputs">
-              <label className="label-input">
-                <p><b>Cuando ser&aacute; el &uacute;ltimo dia de cobertura de {all[k]['first-name']}</b></p>
+              <div className="container-inputs">
+                <label className="label-input">
+                  <p><b>Cu&aacute;l fue el &uacute;ltimo dia de cobertura de {all[i]['first-name']}</b></p>
 
-                <div className="dob-inputs">
-                  <input
-                    type="number"
-                    id="change-month"
-                    name="future-month"
-                    placeholder="MM"
-                    min="1"
-                    max="12"
-                    required
-                  />
-                  <input
-                    type="number"
-                    id="dob-day"
-                    name="future-day"
-                    placeholder="DD"
-                    min="1"
-                    max="31"
-                    required
-                  />
-                  <input
-                    type="number"
-                    id="future-year"
-                    name="change-year"
-                    placeholder="YYYY"
-                    min="1900"
-                    max={new Date().getFullYear()}
-                    required
-                  />
-                </div>
+                  <div className="dob-inputs">
+                    <input
+                      type="number"
+                      id="future-month"
+                      name={`future-month,${i}`}
+                      placeholder="MM"
+                      min="1"
+                      max="12"
+                      required
+                    />
+                    <input
+                      type="number"
+                      id="future-day"
+                      name={`future-day,${i}`}
+                      placeholder="DD"
+                      min="1"
+                      max="31"
+                      required
+                    />
+                    <input
+                      type="number"
+                      id="future-year"
+                      name={`future-year,${i}`}
+                      placeholder="YYYY"
+                      min="1900"
+                      max={new Date().getFullYear()}
+                      required
+                    />
+                  </div>
+                </label>
+              </div>
+
+              <label htmlFor="plan-name" className="label-input">
+                <span>Ingrese el nombre del plan.</span>
+                <span className="caption">Opcional</span>
+                <input type="text" name={"future-name," + i} id="plan-name" />
               </label>
-            </div>
 
-          </>
-        )
-      }
+              <br />
+            </>
+
+          )
+
+        }
+
+
+        )}
+
+
+
 
       <button type="submit" className="green-btn">Guardar y continuar</button>
 
