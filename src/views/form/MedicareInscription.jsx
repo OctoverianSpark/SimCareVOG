@@ -60,7 +60,7 @@ export default function MedicareInscription() {
       }
 
     })
-    location.href = 'medicaid-chip-denied'
+    location.href = '/section2-welcome'
 
 
 
