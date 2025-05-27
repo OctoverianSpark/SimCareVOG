@@ -69,6 +69,7 @@ export default function Sign() {
     formData.append('professional_help', JSON.stringify(getSessionToJSON('professional-help')));
 
     try {
+      
       const res = await axios.post('https://apisim.asistentevirtualsas.com/simulations/save', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

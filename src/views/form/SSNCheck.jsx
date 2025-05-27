@@ -36,7 +36,7 @@ export default function SSNCheck() {
 
 		all.forEach((cover, i) => {
 			if (cover === client) {
-				setSessionToJSON('client', all[i])
+				setSessionToJSON('client', all[0])
 			} else {
 				dependents.forEach((dep, index) => {
 					if (cover === dep) {
