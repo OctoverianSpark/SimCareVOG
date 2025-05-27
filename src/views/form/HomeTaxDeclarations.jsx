@@ -66,6 +66,7 @@ export default function HomeTaxDeclarations() {
       body[key] = value
     })
 
+    body['first-name'] = body['first-name'].replace(body['first-name'][0], body['first-name'][0].toUpperCase())
     body['cover'] = false
 
     setShow(false)

@@ -28,7 +28,7 @@ export default function AboutMe() {
          client[key] = value.toLowerCase();
 
       })
-
+      client['first-name'] = client['first-name'].replace(client['first-name'][0], client['first-name'][0].toUpperCase())
       setSessionToJSON("client", client);
 
       if (params.get('final-check')) {

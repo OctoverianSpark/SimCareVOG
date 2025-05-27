@@ -51,6 +51,7 @@ export default function AddHouseHold() {
 
     })
 
+    body['first-name'] = body['first-name'].replace(body['first-name'][0], body['first-name'][0].toUpperCase())
     body['cover'] = true
 
     dependents.push(body)
