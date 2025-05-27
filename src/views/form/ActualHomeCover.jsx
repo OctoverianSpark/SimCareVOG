@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { getSessionToJSON, setSessionToJSON } from '../../utils/functions'
 import { useSearchParams } from 'react-router-dom'
 
@@ -9,62 +9,81 @@ const all = [client, ...dependents].filter(x => x['cover'] == 'true' || x['cover
 
 
 export default function ActualHomeCover() {
-  const [params] = useSearchParams()
 
-  const k = parseInt(params.get('k')) || 0
+  const [disabled, setDisabled] = useState(false)
+
+
+
+  const closeDates = e => {
+
+    setDisabled(e.target.checked)
+
+    all.forEach(cover => {
+      delete cover['is-actually-enrolled']
+    })
+
+
+
+  }
 
   const goTo = e => {
     e.preventDefault()
 
     const data = new FormData(e.target)
 
-    all[k]['actually-enrolled'] = data.get('actually-enrolled')
+    data.entries().forEach(([key, value]) => {
+      const splitedKey = key.split(',')
+
+      all[splitedKey[1]][splitedKey[0]] = value
+      console.log(splitedKey, value)
+    })
 
     all.forEach((cover, i) => {
-      if (cover == client) {
+      if (cover === client) {
         setSessionToJSON('client', cover)
       } else {
         dependents.forEach((dep, index) => {
-          if (cover == dep) {
+          if (cover === dep) {
             dependents[index] = cover
           }
         })
+
+
         setSessionToJSON('dependents', dependents)
       }
+
     })
 
 
-    if ((k + 1) < all.length) {
-      location.href = `/actual-home-cover?k=${k + 1}`
+
+    if (all.filter(x => x['is-actually-enrolled'] === 'si').length > 0) {
+      location.href = '/enrolled-to'
+
     } else {
-
-      if (data.get('actually-enrolled') === 'si') {
-        location.href = '/enrolled-to'
-      } else {
-        location.href = '/hra-info'
-      }
+      location.href = '/hra-info'
     }
-
   }
 
 
   return (
     <form className='actual-home-cover' method="post" onSubmit={goTo}>
       <h2 className="section-title">La cobertura actual de su hogar</h2>
-      <p><b>Est&aacute; {all[k]['first-name']} actualmente inscrito en la cobertura m&eacute;dica?</b></p>
-      <p className="caption">Seleccione "Si" s&oacute;lo si seguir&aacute;n teniendo la misma cobertura que tienen ahora a partir de 20/6/{new Date().getFullYear()}</p>
+      <p><b>Alguna de estas personas est&aacute; actualmente inscrito en la cobertura m&eacute;dica?</b></p>
+      <span className="caption">Seleccione todas las que apliquen</span>
 
-
-      <label htmlFor="yes" className="radio-label">
-        <input type="radio" name="actually-enrolled" id="yes" value={'si'} />
-        <span>Si</span>
+      {
+        all.map((cover, i) => (
+          <label htmlFor={i} key={i} className="checkbox-label">
+            <input type="checkbox" name={`is-actually-enrolled,${i}`} id={i} disabled={disabled} value={'si'} />
+            <span>{cover['first-name']}</span>
+          </label>
+        ))
+      }
+      <hr />
+      <label htmlFor='none' className="checkbox-label">
+        <input type="checkbox" id='none' onChange={closeDates} />
+        <span>Ninguna de estas personas</span>
       </label>
-
-      <label htmlFor="no" className="radio-label">
-        <input type="radio" name="actually-enrolled" id="no" value={'no'} />
-        <span>No</span>
-      </label>
-
 
       <button type="submit" className='green-btn'>Guradar y Continuar</button>
 
