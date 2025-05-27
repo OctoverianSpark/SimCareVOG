@@ -54,6 +54,7 @@ export default function AddHouseHold() {
     body['first-name'] = body['first-name'].replace(body['first-name'][0], body['first-name'][0].toUpperCase())
     body['cover'] = true
 
+    body['last-name'] = body['last-name'].replace(body['last-name'][0], body['last-name'][0].toUpperCase())
     dependents.push(body)
 
     sessionStorage.setItem('dependents', JSON.stringify(dependents))

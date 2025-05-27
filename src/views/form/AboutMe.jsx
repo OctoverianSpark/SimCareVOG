@@ -29,6 +29,7 @@ export default function AboutMe() {
 
       })
       client['first-name'] = client['first-name'].replace(client['first-name'][0], client['first-name'][0].toUpperCase())
+      client['last-name'] = client['last-name'].replace(client['last-name'][0], client['last-name'][0].toUpperCase())
       setSessionToJSON("client", client);
 
       if (params.get('final-check')) {

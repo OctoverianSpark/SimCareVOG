@@ -36,7 +36,12 @@ export default function MigStatus2() {
       if (cover === client) {
         setSessionToJSON('client', cover)
       } else {
-        dependents[k - 1] = cover
+        dependents.forEach((dep, i) => {
+          if (cover === dep) {
+            dependents[i] = cover
+          }
+          return
+        })
         setSessionToJSON('dependents', dependents)
       }
 

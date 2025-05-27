@@ -4,26 +4,67 @@ import { getSessionToJSON, setSessionToJSON } from "../../utils/functions"
 
 
 const client = getSessionToJSON('client')
-
+const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(x => x['cover'] === 'true' || x['cover'] === true)
 export default function MedicareInscription() {
 
+  const [dates, setDates] = useState(all.map(x => false))
+  const [disabled, setDisabled] = useState(false)
+
+  const openDate = (index, e) => {
 
 
-  const goTo = e => {
+    setDates(prev => {
+      const newArr = [...prev]
+      newArr[index] = e.target.checked
+      return newArr
 
-    e.preventDefault()
-    const data = new FormData(e.target)
-
-    data.entries().forEach(([key, value]) => {
-      client[key] = value
     })
 
-    sessionStorage.setItem('client', JSON.stringify(client))
-
-    location.href = '/section2-welcome'
 
   }
 
+  const closeDates = e => {
+
+    setDates(all.map(x => false))
+    setDisabled(e.target.checked)
+
+
+
+  }
+
+  const goTo = e => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target)
+
+    formData.entries().forEach(([key, value]) => {
+      const splitedKey = key.split(',')
+
+      all[splitedKey[1]][splitedKey[0]] = value
+      console.log(splitedKey, value)
+    })
+
+    all.forEach((cover, i) => {
+      if (cover === client) {
+        setSessionToJSON('client', cover)
+      } else {
+        dependents.forEach((dep, index) => {
+          if (cover === dep) {
+            dependents[index] = cover
+          }
+        })
+
+
+        setSessionToJSON('dependents', dependents)
+      }
+
+    })
+    location.href = 'medicaid-chip-denied'
+
+
+
+  }
   return (
 
     <form method='POST' className="medicare-inscription" onSubmit={goTo}>
@@ -49,17 +90,78 @@ export default function MedicareInscription() {
 
       <div className="form-section">
 
-        <p><b>Est&aacute; {client['first-name']} inscrito en medicare o lo estar&aacute; en los pr&oacute;ximos 3 meses? </b></p>
+        <p><b>Alguna de estas personas est&aacute; inscrito en medicare o lo estar&aacute; en los pr&oacute;ximos 3 meses? </b></p>
         <span className="caption">Seleccione todas las que apliquen</span>
 
-        <label htmlFor="yes" className="radio-label">
-          <input type="radio" name="exist-or-will-in-medicare" id="yes" value={'si'} />
-          <span>Si</span>
+        {
+          all.map((cover, i) => (
+            <label htmlFor={i} key={i} className="checkbox-label">
+              <input type="checkbox" name={`medicare-inscription,${i}`} id={i} checked={dates[i] ?? false} onChange={e => openDate(i, e)} disabled={disabled} />
+              <span>{cover['first-name']}</span>
+            </label>
+          ))
+        }
+        <hr />
+        <label htmlFor='none' className="checkbox-label">
+          <input type="checkbox" id='none' onChange={closeDates} />
+          <span>Ninguna de estas personas</span>
         </label>
-        <label htmlFor="no" className="radio-label">
-          <input type="radio" name="exist-or-will-in-medicare" id="no" value={'no'} />
-          <span>No</span>
-        </label>
+
+
+
+        {
+          dates.map((date, i) => {
+
+            return date && (
+
+              <>
+
+                <div className="container-inputs">
+                  <label className="label-input">
+                    <p><b>Ingrese la fecha de inicio de Medicare de {all[i]['first-name']}</b></p>
+
+                    <div className="dob-inputs">
+                      <input
+                        type="number"
+                        id="inscription-month"
+                        name={`inscription-month,${i}`}
+                        placeholder="MM"
+                        min="1"
+                        max="12"
+                        required
+                      />
+                      <input
+                        type="number"
+                        id="inscription-day"
+                        name={`inscription-day,${i}`}
+                        placeholder="DD"
+                        min="1"
+                        max="31"
+                        required
+                      />
+                      <input
+                        type="number"
+                        id="inscription-year"
+                        name={`inscription-year,${i}`}
+                        placeholder="YYYY"
+                        min="1900"
+                        max={new Date().getFullYear()}
+                        required
+                      />
+                    </div>
+                  </label>
+                </div>
+
+
+                <br />
+              </>
+
+            )
+
+          }
+
+
+          )}
       </div>
 
 
