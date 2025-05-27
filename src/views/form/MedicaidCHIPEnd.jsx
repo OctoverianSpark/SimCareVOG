@@ -54,9 +54,9 @@ export default function MedicaidCHIPEnd() {
       if (cover === client) {
         setSessionToJSON('client', cover)
       } else {
-        dependents.forEach(dep => {
+        dependents.forEach((dep, index) => {
           if (cover === dep) {
-            dependents[i - 1] = cover
+            dependents[index] = cover
           }
         })
 
