@@ -1,18 +1,18 @@
 import React from 'react'
 import { getSessionToJSON, setSessionToJSON } from '../../utils/functions'
+import { useState } from 'react'
 
 
 const client = getSessionToJSON('client')
+const dependents = getSessionToJSON('dependents', [])
+const all = [client, ...dependents].filter(x => x['cover'] === true || x['cover'] === 'true')
 export default function MedRefundOffers() {
+
+  const [disabled, setDisabled] = useState(false)
 
   const goTo = e => {
     e.preventDefault()
 
-    const data = new FormData(e.target)
-
-    client['hra-qsehra-offers'] = data.get('offered-med-refund')
-
-    setSessionToJSON('client', client)
 
     location.href = '/recent-changes'
 
@@ -37,7 +37,7 @@ export default function MedRefundOffers() {
       </div>
 
 
-      <p><b>Le han ofrecido a {client['first-name']} una HRA de cobertura individual o le han proporcionada una QESEHRA con una fecha de inicio entre 20/2/{new Date().getFullYear()} - 20/6/{new Date().getFullYear()}?</b></p>
+      <p><b>A alguna de estas personas les han ofrecido una HRA de cobertura individual o le han proporcionada una QESEHRA con una fecha de inicio entre 20/2/{new Date().getFullYear()} - 20/6/{new Date().getFullYear()}?</b></p>
 
       <span className="caption">S&oacute;lo seleccione "Si" si ambos aplican:</span>
       <ul>
@@ -45,13 +45,20 @@ export default function MedRefundOffers() {
         <li className="caption">Al menos una fecha de inicio de HRA est&aacute; dentro del rango de fechas anterior</li>
       </ul>
 
-      <label htmlFor="yes" className="radio-label">
-        <input type="radio" name="offered-med-refund" id="yes" value={'si'} required />
-        <span>Si</span>
-      </label>
-      <label htmlFor="no" className="radio-label">
-        <input type="radio" name="offered-med-refund" id="no" value={'no'} required />
-        <span>No</span>
+
+      {
+        all.map((cover, i) => (
+          <label htmlFor={i} className="radio-label" key={i}>
+            <input type="checkbox" name={`hra-offers,${i}`} id={i} value={'si'} disabled={disabled} />
+            <span>{cover['first-name']}</span>
+          </label>)
+        )
+      }
+
+      <hr />
+      <label htmlFor="non" className="checkbox-label">
+        <input type="checkbox" id="none" onChange={e => setDisabled(e.target.checked)} />
+        <span>Ninguno de ellos</span>
       </label>
 
       <button type="submit" className="green-btn">Guardar y Continuar</button>

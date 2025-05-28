@@ -15,11 +15,9 @@ export default function HRAIndividualCover() {
   const goTo = e => {
     e.preventDefault()
 
+
+
     location.href = '/job-based-cover-info'
-
-
-
-
 
   }
 
