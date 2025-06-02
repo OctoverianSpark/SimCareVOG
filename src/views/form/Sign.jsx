@@ -18,6 +18,7 @@ export default function Sign() {
   const [disabled, setDisabled] = useState(true)
   const [videoBlob, setVideoBlob] = useState(null);
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false)
+
   useEffect(() => {
     const handler = evt => {
       if (evt.data?.type === 'recording-finished') {
@@ -46,7 +47,7 @@ export default function Sign() {
         if (videoBlob) {
           clearInterval(check);
           submitForm(e.target);
-          
+
         }
       }, 500);
 
@@ -66,22 +67,10 @@ export default function Sign() {
     formData.append('name', getSessionToText('user').replaceAll('"', ''));
     formData.append('professional_help', JSON.stringify(getSessionToJSON('professional-help')));
 
-    try {
-      
-      const res = await axios.post('https://apisim.asistentevirtualsas.com/simulations/save', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          user: 'SIMULATOR_USER',
-          password: 'GOXPERT2025@@@',
-        },
-      });
 
-      console.log('✅ Enviado correctamente', res.data);
-      
-      location.href = '/congratulations'
-    } catch (err) {
-      console.error('❌ Error al enviar datos:', err);
-    }
+    console.log('✅ Enviado correctamente', res.data);
+
+    location.href = '/congratulations'
   }
 
 
